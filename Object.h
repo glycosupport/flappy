@@ -1,9 +1,3 @@
-//**********************************************************************
-// Author:      Billy Huang
-// Date:        2015.08.11
-//**********************************************************************
-
-
 #pragma pack(1)
 
 typedef struct _Point
@@ -41,7 +35,7 @@ typedef struct _AnimaiotnObjectEx
 	                     IN INTN Y ,
 	                     IN INTN Width,
 	                     IN INTN Height,
-	                     OUT EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltOutBuffer);
+	                     OUT EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BltOutBufer);
 } AnimaiotnObjectEx;
 
 

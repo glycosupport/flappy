@@ -1,8 +1,3 @@
-//**********************************************************************
-// Author:      Billy Huang
-// Date: 2015.08.11
-//**********************************************************************
-
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseLib.h>
 #include <Library/UefiLib.h>
@@ -13,7 +8,7 @@
 #include <Protocol/GraphicsOutput.h>
 #include <Protocol/SimpleFileSystem.h>
 
-#include "PcxDecoder.h"
+// #include "PcxDecoder.h"
 
 extern EFI_GRAPHICS_OUTPUT_BLT_PIXEL *gCanvasBuffer;
 
@@ -22,8 +17,8 @@ extern EFI_GRAPHICS_OUTPUT_BLT_PIXEL *gCanvasBuffer;
 #define CANVAS_W        288
 #define CANVAS_H        512
 //Draw on screen offset
-#define CANVAS_X        50
-#define CANVAS_Y        50
+#define CANVAS_X        0
+#define CANVAS_Y        0
 //Math
 #define abs(x)          ((x)<0 ? -(x) : (x))
 #define min(a, b)       (((a) < (b)) ? (a) : (b))
@@ -48,7 +43,16 @@ LoadFromPCX(
     IN  UINTN BufferSize,
     OUT UINTN * width,
     OUT UINTN * height,
-    UINT8 **bltBuffer
+    EFI_GRAPHICS_OUTPUT_BLT_PIXEL **bltBuffer
+);
+
+EFI_STATUS
+LoadFromRGB(
+    IN  UINT8 *Buffer,
+    IN  UINTN BufferSize,
+    OUT UINTN * width,
+    OUT UINTN * height,
+    EFI_GRAPHICS_OUTPUT_BLT_PIXEL **bltBuffer
 );
 
 EFI_STATUS

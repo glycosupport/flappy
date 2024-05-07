@@ -12,6 +12,7 @@
   GameCore.c
   GraphicUtility.c
   PcxDecoder.c
+  RGBDecoder.c
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -25,7 +26,7 @@
 
 [Guids]
   gEfiFileInfoGuid
-  
+
 [Protocols]
   gEfiGraphicsOutputProtocolGuid
   gEfiSimpleFileSystemProtocolGuid

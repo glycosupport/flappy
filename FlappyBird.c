@@ -1,9 +1,3 @@
-
-//**********************************************************************
-// Author:        Billy Huang
-// Date:          2015.08.10
-//**********************************************************************
-
 #include <Library/BaseLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiApplicationEntryPoint.h>
@@ -20,6 +14,7 @@
 #include "Object.h"
 #include "GraphicUtility.h"
 #include "PcxImage.h"
+#include "RGBImage.h"
 
 #define LAND_H                   112
 #define BACK_SPEED               1
@@ -39,33 +34,21 @@ Object          landObj[2];
 Object          pipeObj[2];
 Object          gameOverObj;
 
-//Game core framework
 GameCore        *core;
 
-//For first test, should change it to Object struct.
 EFI_GRAPHICS_OUTPUT_BLT_PIXEL *BackgroundImg = NULL;
 UINTN w, h;
 
 
 VOID LoadResource();
 
-///
-/// Init all obj position
-///
 VOID ObjectInit();
 
-///
-///  Callback function
-///  The Game core framework will call this custom function which has game logic by user design
-///
 VOID MyGameLogic(
     EFI_INPUT_KEY Key,
     EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutput
 );
 
-///
-/// When bird flying logic
-///
 VOID OnBirdFlying(
     IN  EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutput,
     IN  AnimationObject *birdObj,
@@ -79,23 +62,17 @@ UINT8 IsCollision(
     IN  Info object2
 );
 
-
 EFI_STATUS
 EFIAPI
 UefiMain (
     IN EFI_HANDLE ImageHandle,
     IN EFI_SYSTEM_TABLE * SystemTable
 )
-{	
-	//Get instance
+{
 	core = GameCoreInstance();
-	//Init game core framework
 	core->Initialize();
-	//Loading res
 	LoadResource();
-	//Init position
 	ObjectInit();
-	//Main Game 
 	core->GameLoop(&MyGameLogic);
 
 	return EFI_SUCCESS;
@@ -107,7 +84,6 @@ IsCollision(
     IN  Info object2
 )
 {
-	//Fine tune
 	object1.pos.x += 7;
 	object1.pos.y += 7;
 	object1.width -= 7;
@@ -127,7 +103,6 @@ IsCollision(
 VOID
 ObjectInit()
 {
-	//Init the game object position
 	birdObj.info.pos.x = 120;
 	birdObj.info.pos.y = 200;
 
@@ -154,40 +129,49 @@ LoadResource()
 {
 
 	birdObj.Image = ANIMATION_CREATE(3);
-	LoadFromPCX(landPcx, sizeof(landPcx), &landObj[0].info.width, &landObj[0].info.height, (UINT8**)&landObj[0].Image);
-	LoadFromPCX(bird0_0, sizeof(bird0_0), &birdObj.info.width, &birdObj.info.height, (UINT8**)&birdObj.Image[0]);
-	LoadFromPCX(bird0_1, sizeof(bird0_1), &birdObj.info.width, &birdObj.info.height, (UINT8**)&birdObj.Image[1]);
-	LoadFromPCX(bird0_2, sizeof(bird0_2), &birdObj.info.width, &birdObj.info.height, (UINT8**)&birdObj.Image[2]);
-	LoadFromPCX(pipe_down, sizeof(pipe_down), &pipeObj[0].info.width, &pipeObj[0].info.height, (UINT8**)&pipeObj[0].Image);
-	LoadFromPCX(pipe_up, sizeof(pipe_up), &pipeObj[1].info.width, &pipeObj[1].info.height, (UINT8**)&pipeObj[1].Image);
-	LoadFromPCX(font_048, sizeof(font_048), &scoreObj[0].info.width, &scoreObj[0].info.height, (UINT8**)&scoreObj[0].Image);
-	LoadFromPCX(font_049, sizeof(font_049), &scoreObj[1].info.width, &scoreObj[1].info.height, (UINT8**)&scoreObj[1].Image);
-	LoadFromPCX(font_050, sizeof(font_050), &scoreObj[2].info.width, &scoreObj[2].info.height, (UINT8**)&scoreObj[2].Image);
-	LoadFromPCX(font_051, sizeof(font_051), &scoreObj[3].info.width, &scoreObj[3].info.height, (UINT8**)&scoreObj[3].Image);
-	LoadFromPCX(font_052, sizeof(font_052), &scoreObj[4].info.width, &scoreObj[4].info.height, (UINT8**)&scoreObj[4].Image);
-	LoadFromPCX(font_053, sizeof(font_053), &scoreObj[5].info.width, &scoreObj[5].info.height, (UINT8**)&scoreObj[5].Image);
-	LoadFromPCX(font_054, sizeof(font_054), &scoreObj[6].info.width, &scoreObj[6].info.height, (UINT8**)&scoreObj[6].Image);
-	LoadFromPCX(font_055, sizeof(font_055), &scoreObj[7].info.width, &scoreObj[7].info.height, (UINT8**)&scoreObj[7].Image);
-	LoadFromPCX(font_056, sizeof(font_056), &scoreObj[8].info.width, &scoreObj[8].info.height, (UINT8**)&scoreObj[8].Image);
-	LoadFromPCX(font_057, sizeof(font_057), &scoreObj[9].info.width, &scoreObj[9].info.height, (UINT8**)&scoreObj[9].Image);
-	LoadFromPCX(tutorial, sizeof(tutorObj),  &tutorObj.info.width, &tutorObj.info.height, (UINT8**)&tutorObj.Image);
-	LoadFromPCX(text_game_over, sizeof(text_game_over),  &gameOverObj.info.width, &gameOverObj.info.height, (UINT8**)&gameOverObj.Image);
+	// LoadFromPCX(landPcx, sizeof(landPcx), &landObj[0].info.width, &landObj[0].info.height, &landObj[0].Image);
+	LoadFromRGB(land, (UINTN)150528, &landObj[0].info.width, &landObj[0].info.height, &landObj[0].Image);
+	landObj[0].info.width = 336;
+	landObj[0].info.height = 112;
+
+	LoadFromRGB(bird, (UINTN)9216, &birdObj.info.width, &birdObj.info.height, &birdObj.Image[0]);
+	LoadFromRGB(bird1, (UINTN)9216, &birdObj.info.width, &birdObj.info.height, &birdObj.Image[1]);
+	LoadFromRGB(bird2, (UINTN)9216, &birdObj.info.width, &birdObj.info.height, &birdObj.Image[2]);
+	birdObj.info.width = 48;
+	birdObj.info.height = 48;
+	
+	// LoadFromPCX(bird0_0, sizeof(bird0_0), &birdObj.info.width, &birdObj.info.height, &birdObj.Image[0]);
+	// LoadFromPCX(bird0_1, sizeof(bird0_1), &birdObj.info.width, &birdObj.info.height, &birdObj.Image[1]);
+	// LoadFromPCX(bird0_2, sizeof(bird0_2), &birdObj.info.width, &birdObj.info.height, &birdObj.Image[2]);
+	LoadFromRGB(pipeDown, (UINTN)65650, &pipeObj[0].info.width, &pipeObj[0].info.height, &pipeObj[0].Image);
+	LoadFromRGB(pipeUp, (UINTN)65650, &pipeObj[1].info.width, &pipeObj[1].info.height, &pipeObj[1].Image);
+	pipeObj[0].info.width = 52;
+	pipeObj[0].info.height = 320;
+	pipeObj[1].info.width = 52;
+	pipeObj[1].info.height = 320;
+	// LoadFromPCX(font_048, sizeof(font_048), &scoreObj[0].info.width, &scoreObj[0].info.height, &scoreObj[0].Image);
+	// LoadFromPCX(font_049, sizeof(font_049), &scoreObj[1].info.width, &scoreObj[1].info.height, &scoreObj[1].Image);
+	// LoadFromPCX(font_050, sizeof(font_050), &scoreObj[2].info.width, &scoreObj[2].info.height, &scoreObj[2].Image);
+	// LoadFromPCX(font_051, sizeof(font_051), &scoreObj[3].info.width, &scoreObj[3].info.height, &scoreObj[3].Image);
+	// LoadFromPCX(font_052, sizeof(font_052), &scoreObj[4].info.width, &scoreObj[4].info.height, &scoreObj[4].Image);
+	// LoadFromPCX(font_053, sizeof(font_053), &scoreObj[5].info.width, &scoreObj[5].info.height, &scoreObj[5].Image);
+	// LoadFromPCX(font_054, sizeof(font_054), &scoreObj[6].info.width, &scoreObj[6].info.height, &scoreObj[6].Image);
+	// LoadFromPCX(font_055, sizeof(font_055), &scoreObj[7].info.width, &scoreObj[7].info.height, &scoreObj[7].Image);
+	// LoadFromPCX(font_056, sizeof(font_056), &scoreObj[8].info.width, &scoreObj[8].info.height, &scoreObj[8].Image);
+	// LoadFromPCX(font_057, sizeof(font_057), &scoreObj[9].info.width, &scoreObj[9].info.height, &scoreObj[9].Image);
+	// LoadFromPCX(tutorial, sizeof(tutorObj),  &tutorObj.info.width, &tutorObj.info.height, &tutorObj.Image);
+	// LoadFromPCX(text_game_over, sizeof(text_game_over),  &gameOverObj.info.width, &gameOverObj.info.height, &gameOverObj.Image);
 
 	//Load from bitmap
 	//Status = LoadBitmapFile (L"text_game_over.bmp", &gameOver.info.width, &gameOver.info.height, &gameOver.Image);
 
 }
 
-
-///
-///  Callback function
-///  The Game core framework will call this custom function which has game logic by user design
-///
 VOID MyGameLogic(
     EFI_INPUT_KEY Key,
     EFI_GRAPHICS_OUTPUT_PROTOCOL *GraphicsOutput)
 {
-	EFI_STATUS      Status = EFI_SUCCESS;
+	// EFI_STATUS Status = EFI_SUCCESS;
 	static UINT8    scoreObjNum = 0;
 	static UINT8    isGameOver = 0;
 	static INTN     istutorObjrial = 1;
@@ -199,14 +183,14 @@ VOID MyGameLogic(
 	if (Key.ScanCode == SCAN_END)
 		return;
 
-	Status = DrawGraphic (GraphicsOutput, BackgroundImg, X, 0, w, h, NULL);
-	Status = DrawGraphic (GraphicsOutput, BackgroundImg, X2, 0, w, h, NULL);
-	Status = DrawGraphic (GraphicsOutput, pipeObj[0].Image, pipeObj[0].info.pos.x, pipeObj[0].info.pos.y, pipeObj[0].info.width, pipeObj[0].info.height, NULL);
-	Status = DrawGraphic (GraphicsOutput, pipeObj[1].Image, pipeObj[1].info.pos.x, pipeObj[1].info.pos.y, pipeObj[1].info.width, pipeObj[1].info.height, NULL);
-	Status = DrawGraphic (GraphicsOutput, landObj[0].Image, landObj[0].info.pos.x, landObj[0].info.pos.y, landObj[0].info.width, landObj[0].info.height, NULL);
-	Status = DrawGraphic (GraphicsOutput, landObj[1].Image, landObj[1].info.pos.x, landObj[1].info.pos.y, landObj[1].info.width, landObj[1].info.height, NULL);
-	Status = DrawGraphic (GraphicsOutput, scoreObj[scoreObjNum % 10].Image, 145, 20, scoreObj[scoreObjNum % 10].info.width, scoreObj[scoreObjNum % 10].info.height, NULL);
-	Status = DrawGraphic (GraphicsOutput, scoreObj[scoreObjNum / 10].Image, 120, 20, scoreObj[scoreObjNum / 10].info.width, scoreObj[scoreObjNum / 10].info.height, NULL);
+	// DrawGraphic (GraphicsOutput, BackgroundImg, X, 0, w, h, NULL);
+	// DrawGraphic (GraphicsOutput, BackgroundImg, X2, 0, w, h, NULL);
+	DrawGraphic (GraphicsOutput, pipeObj[0].Image, pipeObj[0].info.pos.x, pipeObj[0].info.pos.y, pipeObj[0].info.width, pipeObj[0].info.height, NULL);
+	DrawGraphic (GraphicsOutput, pipeObj[1].Image, pipeObj[1].info.pos.x, pipeObj[1].info.pos.y, pipeObj[1].info.width, pipeObj[1].info.height, NULL);
+	DrawGraphic (GraphicsOutput, landObj[0].Image, landObj[0].info.pos.x, landObj[0].info.pos.y, landObj[0].info.width, landObj[0].info.height, NULL);
+	DrawGraphic (GraphicsOutput, landObj[1].Image, landObj[1].info.pos.x, landObj[1].info.pos.y, landObj[1].info.width, landObj[1].info.height, NULL);
+	// DrawGraphic (GraphicsOutput, scoreObj[scoreObjNum % 10].Image, 145, 20, scoreObj[scoreObjNum % 10].info.width, scoreObj[scoreObjNum % 10].info.height, NULL);
+	// DrawGraphic (GraphicsOutput, scoreObj[scoreObjNum / 10].Image, 120, 20, scoreObj[scoreObjNum / 10].info.width, scoreObj[scoreObjNum / 10].info.height, NULL);
 
 	if (!isGameOver  && !istutorObjrial)
 	{
@@ -264,7 +248,7 @@ VOID MyGameLogic(
 
 	if (isGameOver)
 	{
-		Status = DrawGraphic (GraphicsOutput, gameOverObj.Image, gameOverObj.info.pos.x, gameOverObj.info.pos.y, gameOverObj.info.width, gameOverObj.info.height, NULL);
+		DrawGraphic (GraphicsOutput, gameOverObj.Image, gameOverObj.info.pos.x, gameOverObj.info.pos.y, gameOverObj.info.width, gameOverObj.info.height, NULL);
 		if (Key.ScanCode == SCAN_UP)
 		{
 			ObjectInit();
@@ -293,7 +277,7 @@ VOID MyGameLogic(
 
 	if (istutorObjrial)
 	{
-		Status = DrawGraphic (GraphicsOutput, tutorObj.Image, tutorObj.info.pos.x, tutorObj.info.pos.y, tutorObj.info.width, tutorObj.info.height, NULL);
+		DrawGraphic (GraphicsOutput, tutorObj.Image, tutorObj.info.pos.x, tutorObj.info.pos.y, tutorObj.info.width, tutorObj.info.height, NULL);
 		OnBirdFlying(GraphicsOutput, &birdObj, Key, frame, &istutorObjrial);
 	}
 

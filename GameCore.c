@@ -22,7 +22,7 @@ VOID Initialize()
 	gBS->LocateProtocol (
 	    &gEfiGraphicsOutputProtocolGuid,
 	    NULL,
-	    &GraphicsOutput
+	    (void**)&GraphicsOutput
 	);
 
 	gBS->CreateEvent (
@@ -63,7 +63,7 @@ VOID GameLoop(
     VOID (*func)(EFI_INPUT_KEY, EFI_GRAPHICS_OUTPUT_PROTOCOL*)
 )
 {
-	EFI_STATUS    Status = EFI_SUCCESS;
+	// EFI_STATUS    Status = EFI_SUCCESS;
 	UINTN         Index;
 	EFI_INPUT_KEY Key;
 
@@ -83,19 +83,19 @@ VOID GameLoop(
 			//Callback user logic
 			func(Key, GraphicsOutput);
 
-			Status = GraphicsOutput->Blt (
+			GraphicsOutput->Blt (
 			             GraphicsOutput,
 			             gCanvasBuffer,
 			             EfiBltBufferToVideo,
 			             0 , 0 ,
-			             CANVAS_X , CANVAS_Y , //xy
-			             288, 512,
+			             CANVAS_X , CANVAS_Y ,
+			             CANVAS_W, CANVAS_H,
 			             0
 			         );
 
 		}
 		Key.ScanCode = SCAN_NULL;
-	} while (Key.ScanCode != SCAN_END);//Key.ScanCode != SCAN_END
+	} while (Key.ScanCode != SCAN_END);
 
 }
 
